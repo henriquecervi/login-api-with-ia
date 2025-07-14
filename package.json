@@ -12,6 +12,27 @@
     "test:report": "npx allure generate allure-results --clean && npx allure open",
     "test:report:generate": "npx allure generate allure-results --clean"
   },
+  "nyc": {
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "all": true,
+    "check-coverage": true,
+    "reporter": [
+      "text",
+      "html",
+      "lcov"
+    ],
+    "exclude": [
+      "coverage/**",
+      "packages/*/test/**",
+      "test/**",
+      "test{,-*}.js",
+      "**/*{.,-}test.js",
+      "**/*{.,-}spec.js",
+      "**/__tests__/**",
+      "**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.js",
+      "**/.{eslint,mocha,prettier}rc.js"
+    ]
+  },
   "keywords": [
     "api",
     "login",
