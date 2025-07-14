@@ -1,0 +1,120 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests with Mochawesome
+        run: npm test
+
+      - name: Run coverage report
+        run: npm run test:coverage
+
+      - name: Upload Mochawesome report artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: mochawesome-report
+          path: mochawesome-report/
+
+      - name: Upload coverage report artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/
+
+  deploy-reports:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests with Mochawesome
+        run: npm test
+
+      - name: Run coverage report
+        run: npm run test:coverage
+
+      - name: Create reports directory
+        run: mkdir -p reports
+
+      - name: Copy Mochawesome report
+        run: cp -r mochawesome-report reports/
+
+      - name: Copy coverage report
+        run: cp -r coverage reports/
+
+      - name: Create index page
+        run: |
+          cat > reports/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Login API Test Reports</title>
+              <style>
+                  body { font-family: Arial, sans-serif; margin: 40px; background-color: #f5f5f5; }
+                  .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                  h1 { color: #333; text-align: center; }
+                  .report-link { display: block; margin: 20px 0; padding: 15px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; text-align: center; }
+                  .report-link:hover { background: #0056b3; }
+                  .timestamp { text-align: center; color: #666; margin-top: 30px; }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <h1>🔍 Login API Test Reports</h1>
+                  <p>Welcome to the test reports for the Login API project. Click on the links below to view detailed reports.</p>
+                  
+                  <a href="mochawesome-report/mochawesome.html" class="report-link">
+                      📊 View Test Results (Mochawesome Report)
+                  </a>
+                  
+                  <a href="coverage/lcov-report/index.html" class="report-link">
+                      📈 View Code Coverage Report
+                  </a>
+                  
+                  <div class="timestamp">
+                      <p>Last updated: <span id="timestamp"></span></p>
+                  </div>
+              </div>
+              <script>
+                  document.getElementById('timestamp').textContent = new Date().toLocaleString();
+              </script>
+          </body>
+          </html>
+          EOF
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./reports
+          force_orphan: true 
