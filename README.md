@@ -14,6 +14,7 @@ A RESTful authentication API built with Node.js, Express, and JWT. Features user
 - 📊 **Test Reporting** - Mochawesome HTML reports and NYC coverage reports
 - 🔄 **CI/CD Pipeline** - Automated testing with GitHub Actions
 - 🌐 **GitHub Pages** - Live test reports and coverage dashboard
+- 📚 **API Documentation** - Interactive Swagger/OpenAPI documentation
 - 🔒 **Security Headers** - Helmet for security middleware
 - 📝 **Error Handling** - Centralized error management
 - 🏥 **Health Check** - API health monitoring endpoint
@@ -89,7 +90,12 @@ A RESTful authentication API built with Node.js, Express, and JWT. Features user
    npm start
    ```
 
-5. **Run tests**
+5. **Access API Documentation**
+   - Open your browser and go to: `http://localhost:3000/api-docs`
+   - Interactive Swagger UI with all endpoints documented
+   - Test endpoints directly from the browser
+
+6. **Run tests**
    ```bash
    # Run all tests
    npm test
