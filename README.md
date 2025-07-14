@@ -392,6 +392,12 @@ npm run test:watch
 # Run tests with coverage
 npm run test:coverage
 
+# Generate Allure report
+npm run test:report:generate
+
+# Open Allure report in browser
+npm run test:report
+
 # Run specific test file
 npx mocha test/auth.test.js
 ```
