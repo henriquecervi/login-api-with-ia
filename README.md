@@ -507,3 +507,14 @@ The project uses GitHub Actions for continuous integration:
 ## License
 
 MIT License - see LICENSE file for details. 
+
+### How to View Test Reports
+
+- **Allure Test Report (Live):**  
+  [View Allure Report](https://henriquecervi.github.io/login-api-with-ia/allure-report/index.html)
+
+- **Coverage Report (Live):**  
+  [View Coverage Report](https://henriquecervi.github.io/login-api-with-ia/coverage/lcov-report/index.html)
+
+- **Landing Page:**  
+  [Test Reports Dashboard](https://henriquecervi.github.io/login-api-with-ia/) 
