@@ -34,23 +34,28 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests with Mochawesome
+      - name: Run tests with Allure
         run: npm test
 
       - name: Run coverage report
         run: npm run test:coverage
 
-      - name: Upload Mochawesome report artifact
+      - name: Generate Allure report
+        run: npm run test:report:generate
+
+      - name: Upload Allure report artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mochawesome-report
-          path: mochawesome-report/
+          name: allure-report
+          path: allure-report/
+          if-no-files-found: warn
 
       - name: Upload coverage report artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage/
+          if-no-files-found: warn
 
   deploy-reports:
     needs: build-and-test
@@ -75,23 +80,26 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests with Mochawesome
+      - name: Run tests with Allure
         run: npm test
 
       - name: Run coverage report
         run: npm run test:coverage
 
+      - name: Generate Allure report
+        run: npm run test:report:generate
+
       - name: Create reports directory
         run: mkdir -p reports
 
-      - name: Copy Mochawesome report
+      - name: Copy Allure report
         run: |
-          if [ -d "mochawesome-report" ]; then
-            cp -r mochawesome-report reports/
+          if [ -d "allure-report" ]; then
+            cp -r allure-report reports/
           else
-            echo "Mochawesome report directory not found, creating placeholder"
-            mkdir -p reports/mochawesome-report
-            echo "<html><body><h1>No test reports available</h1></body></html>" > reports/mochawesome-report/index.html
+            echo "Allure report directory not found, creating placeholder"
+            mkdir -p reports/allure-report
+            echo "<html><body><h1>No Allure test reports available</h1></body></html>" > reports/allure-report/index.html
           fi
 
       - name: Copy coverage report
@@ -127,8 +135,8 @@ jobs:
                   <h1>🔍 Login API Test Reports</h1>
                   <p>Welcome to the test reports for the Login API project. Click on the links below to view detailed reports.</p>
                   
-                  <a href="mochawesome-report/mochawesome.html" class="report-link">
-                      📊 View Test Results (Mochawesome Report)
+                  <a href="allure-report/index.html" class="report-link">
+                      📊 View Test Results (Allure Report)
                   </a>
                   
                   <a href="coverage/lcov-report/index.html" class="report-link">
@@ -146,9 +154,14 @@ jobs:
           </html>
           EOF
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./reports
-          force_orphan: true 
+          path: './reports'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 

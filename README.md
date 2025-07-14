@@ -11,7 +11,7 @@ A RESTful authentication API built with Node.js, Express, and JWT. Features user
 - 🔒 **Account Locking** - Automatic account lockout after 3 failed login attempts
 - 🔑 **Password Reset** - Secure password reset via email tokens
 - 🧪 **Comprehensive Testing** - Mocha + Supertest test suite
-- 📊 **Test Reporting** - Mochawesome HTML reports and NYC coverage reports
+- 📊 **Test Reporting** - Allure HTML reports and NYC coverage reports
 - 🔄 **CI/CD Pipeline** - Automated testing with GitHub Actions
 - 🌐 **GitHub Pages** - Live test reports and coverage dashboard
 - 📚 **API Documentation** - Interactive Swagger/OpenAPI documentation
@@ -400,7 +400,7 @@ npx mocha test/auth.test.js
 
 The project generates detailed test reports:
 
-- **Mochawesome Reports**: Beautiful HTML test reports with detailed results
+- **Allure Reports**: Professional HTML test reports with detailed results and trends
 - **NYC Coverage Reports**: Code coverage analysis with line-by-line details
 - **GitHub Pages**: Live reports available at `https://yourusername.github.io/login-api-with-ia/`
 
@@ -449,7 +449,7 @@ The project uses GitHub Actions for continuous integration:
 2. **Environment**: Ubuntu latest with Node.js 18
 3. **Steps**:
    - Install dependencies
-   - Run tests with Mochawesome
+   - Run tests with Allure
    - Generate coverage reports
    - Upload test artifacts
    - Deploy reports to GitHub Pages (main branch only)
@@ -458,11 +458,11 @@ The project uses GitHub Actions for continuous integration:
 
 - **GitHub Actions**: Download artifacts from Actions tab
 - **GitHub Pages**: View live reports at `https://yourusername.github.io/login-api-with-ia/`
-- **Local**: Reports generated in `mochawesome-report/` and `coverage/` directories
+- **Local**: Reports generated in `allure-report/` and `coverage/` directories
 
 ### Report Types
 
-- **Mochawesome**: Interactive HTML test reports with pass/fail status
+- **Allure**: Professional HTML test reports with pass/fail status, trends, and detailed insights
 - **NYC Coverage**: Code coverage with branch and line coverage metrics
 - **Landing Page**: Custom index page with navigation to all reports
 
