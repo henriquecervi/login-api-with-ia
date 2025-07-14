@@ -9,6 +9,13 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      JWT_SECRET: test-jwt-secret-key-for-ci-pipeline
+      JWT_EXPIRES_IN: 1h
+      RATE_LIMIT_WINDOW_MS: 60000
+      RATE_LIMIT_MAX_REQUESTS: 1000
+      BCRYPT_ROUNDS: 4
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -43,6 +50,13 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    env:
+      NODE_ENV: test
+      JWT_SECRET: test-jwt-secret-key-for-ci-pipeline
+      JWT_EXPIRES_IN: 1h
+      RATE_LIMIT_WINDOW_MS: 60000
+      RATE_LIMIT_MAX_REQUESTS: 1000
+      BCRYPT_ROUNDS: 4
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
