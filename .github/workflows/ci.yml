@@ -79,10 +79,24 @@ jobs:
         run: mkdir -p reports
 
       - name: Copy Mochawesome report
-        run: cp -r mochawesome-report reports/
+        run: |
+          if [ -d "mochawesome-report" ]; then
+            cp -r mochawesome-report reports/
+          else
+            echo "Mochawesome report directory not found, creating placeholder"
+            mkdir -p reports/mochawesome-report
+            echo "<html><body><h1>No test reports available</h1></body></html>" > reports/mochawesome-report/index.html
+          fi
 
       - name: Copy coverage report
-        run: cp -r coverage reports/
+        run: |
+          if [ -d "coverage" ]; then
+            cp -r coverage reports/
+          else
+            echo "Coverage report directory not found, creating placeholder"
+            mkdir -p reports/coverage
+            echo "<html><body><h1>No coverage reports available</h1></body></html>" > reports/coverage/index.html
+          fi
 
       - name: Create index page
         run: |
