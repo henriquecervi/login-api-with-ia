@@ -263,6 +263,61 @@ class AuthController {
       next(error);
     }
   }
+
+  // Change user password
+  async changePassword(req, res, next) {
+    try {
+      const userId = req.user.userId;
+      const { currentPassword, newPassword } = req.body;
+
+      // Get user data
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({
+          error: 'User not found',
+          message: 'User account not found'
+        });
+      }
+
+      // Verify current password
+      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+      if (!isCurrentPasswordValid) {
+        return res.status(401).json({
+          error: 'Invalid current password',
+          message: 'The current password you provided is incorrect'
+        });
+      }
+
+      // Check if new password is different from current password
+      const isSamePassword = await bcrypt.compare(newPassword, user.password);
+      if (isSamePassword) {
+        return res.status(400).json({
+          error: 'Invalid new password',
+          message: 'New password must be different from your current password'
+        });
+      }
+
+      // Hash new password
+      const saltRounds = parseInt(process.env.BCRYPT_ROUNDS) || 12;
+      const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+
+      // Update password
+      const updatedUser = await User.update(userId, { password: hashedNewPassword });
+      
+      if (!updatedUser) {
+        return res.status(500).json({
+          error: 'Update failed',
+          message: 'Failed to update password'
+        });
+      }
+
+      res.status(200).json({
+        message: 'Password changed successfully'
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new AuthController(); 

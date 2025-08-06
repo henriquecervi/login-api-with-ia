@@ -1,6 +1,6 @@
 # Login API with JavaScript
 
-A RESTful authentication API built with Node.js, Express, and JWT. Features user registration, login, profile management, account security, and comprehensive testing with Mocha and Supertest. Includes automated CI/CD with GitHub Actions and test reporting.
+A RESTful authentication API built with Node.js, Express, and JWT. Features user registration, login, profile management, password management, account security, and comprehensive testing with Mocha and Supertest. Includes automated CI/CD with GitHub Actions and test reporting.
 
 ## Features
 
@@ -10,6 +10,7 @@ A RESTful authentication API built with Node.js, Express, and JWT. Features user
 - 🚀 **Rate Limiting** - Protection against brute force attacks
 - 🔒 **Account Locking** - Automatic account lockout after 3 failed login attempts
 - 🔑 **Password Reset** - Secure password reset via email tokens
+- 🔄 **Password Change** - Secure password change for authenticated users
 - 🧪 **Comprehensive Testing** - Mocha + Supertest test suite
 - 📊 **Test Reporting** - Allure HTML reports and NYC coverage reports
 - 🔄 **CI/CD Pipeline** - Automated testing with GitHub Actions
@@ -29,6 +30,7 @@ A RESTful authentication API built with Node.js, Express, and JWT. Features user
 | `POST` | `/api/auth/reset-password` | Reset password with token | No |
 | `GET` | `/api/auth/profile` | Get user profile | Yes |
 | `PUT` | `/api/auth/profile` | Update user profile | Yes |
+| `PUT` | `/api/auth/change-password` | Change user password | Yes |
 | `GET` | `/health` | Health check | No |
 
 ## Security Features
@@ -44,6 +46,13 @@ A RESTful authentication API built with Node.js, Express, and JWT. Features user
 - **1-Hour Expiry**: Reset tokens expire after 1 hour
 - **Security**: Doesn't reveal if email exists (prevents user enumeration)
 - **Strong Validation**: New passwords must meet security requirements
+
+### Password Change
+- **Authenticated Users**: Logged-in users can change their password
+- **Current Password Verification**: Must provide current password for security
+- **Strong Validation**: New passwords must meet security requirements
+- **Password Confirmation**: Requires confirmation to prevent typos
+- **Different Password**: New password must be different from current password
 
 ## Quick Start
 
@@ -278,6 +287,33 @@ Authorization: Bearer <token>
 }
 ```
 
+### Change Password
+
+**PUT** `/api/auth/change-password`
+
+Change current user's password.
+
+**Headers:**
+```
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+```json
+{
+  "currentPassword": "CurrentPassword123",
+  "newPassword": "NewPassword123",
+  "confirmPassword": "NewPassword123"
+}
+```
+
+**Response (200):**
+```json
+{
+  "message": "Password changed successfully"
+}
+```
+
 ## Validation Rules
 
 ### Registration
@@ -297,6 +333,12 @@ Authorization: Bearer <token>
 ### Profile Update
 - **Email**: Must be a valid email format (if provided)
 - **Name**: 2-50 characters (if provided)
+
+### Password Change
+- **Current Password**: Required (must match user's current password)
+- **New Password**: Minimum 6 characters, must contain uppercase, lowercase, and number
+- **Confirm Password**: Must match new password
+- **Different Password**: New password must be different from current password
 
 ## Error Responses
 
@@ -479,6 +521,7 @@ The project uses GitHub Actions for continuous integration:
 - **Rate Limiting**: Protection against brute force attacks
 - **Account Locking**: Automatic lockout after failed attempts
 - **Password Reset**: Secure email-based password recovery
+- **Password Change**: Secure password change for authenticated users
 - **Security Headers**: Helmet middleware for security
 - **Input Validation**: Comprehensive request validation
 - **CORS**: Cross-origin resource sharing configuration

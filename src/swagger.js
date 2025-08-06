@@ -152,6 +152,29 @@ const options = {
             }
           }
         },
+        ChangePasswordRequest: {
+          type: 'object',
+          required: ['currentPassword', 'newPassword', 'confirmPassword'],
+          properties: {
+            currentPassword: {
+              type: 'string',
+              description: 'Current user password',
+              example: 'CurrentPassword123'
+            },
+            newPassword: {
+              type: 'string',
+              description: 'New password (min 6 chars, must contain uppercase, lowercase, and number)',
+              minLength: 6,
+              example: 'NewPassword123'
+            },
+            confirmPassword: {
+              type: 'string',
+              description: 'Confirmation of new password (must match newPassword)',
+              minLength: 6,
+              example: 'NewPassword123'
+            }
+          }
+        },
         Error: {
           type: 'object',
           properties: {

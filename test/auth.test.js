@@ -598,6 +598,150 @@ describe('Authentication API', () => {
     });
   });
 
+  describe('PUT /api/auth/change-password', () => {
+    beforeEach(async () => {
+      // Register a test user and get auth token
+      const userData = {
+        name: 'Change Password User',
+        email: 'changepass@example.com',
+        password: 'OldPassword123'
+      };
+
+      const registerResponse = await request(app)
+        .post('/api/auth/register')
+        .send(userData);
+
+      authToken = registerResponse.body.token;
+      testUser = registerResponse.body.user;
+    });
+
+    it('should change password successfully', async () => {
+      const passwordData = {
+        currentPassword: 'OldPassword123',
+        newPassword: 'NewPassword123',
+        confirmPassword: 'NewPassword123'
+      };
+
+      const response = await request(app)
+        .put('/api/auth/change-password')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(passwordData)
+        .expect(200);
+
+      expect(response.body).to.have.property('message', 'Password changed successfully');
+
+      // Test login with new password
+      const loginResponse = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: 'changepass@example.com',
+          password: 'NewPassword123'
+        })
+        .expect(200);
+
+      expect(loginResponse.body).to.have.property('token');
+    });
+
+    it('should return 401 for incorrect current password', async () => {
+      const passwordData = {
+        currentPassword: 'WrongPassword123',
+        newPassword: 'NewPassword123',
+        confirmPassword: 'NewPassword123'
+      };
+
+      const response = await request(app)
+        .put('/api/auth/change-password')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(passwordData)
+        .expect(401);
+
+      expect(response.body).to.have.property('error', 'Invalid current password');
+      expect(response.body).to.have.property('message', 'The current password you provided is incorrect');
+    });
+
+    it('should return 400 when new password is same as current password', async () => {
+      const passwordData = {
+        currentPassword: 'OldPassword123',
+        newPassword: 'OldPassword123',
+        confirmPassword: 'OldPassword123'
+      };
+
+      const response = await request(app)
+        .put('/api/auth/change-password')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(passwordData)
+        .expect(400);
+
+      expect(response.body).to.have.property('error', 'Invalid new password');
+      expect(response.body).to.have.property('message', 'New password must be different from your current password');
+    });
+
+    it('should return 400 for validation errors', async () => {
+      const passwordData = {
+        currentPassword: 'OldPassword123',
+        newPassword: 'weak',
+        confirmPassword: 'weak'
+      };
+
+      const response = await request(app)
+        .put('/api/auth/change-password')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(passwordData)
+        .expect(400);
+
+      expect(response.body).to.have.property('error', 'Validation failed');
+      expect(response.body.details).to.be.an('array');
+    });
+
+    it('should return 400 when password confirmation does not match', async () => {
+      const passwordData = {
+        currentPassword: 'OldPassword123',
+        newPassword: 'NewPassword123',
+        confirmPassword: 'DifferentPassword123'
+      };
+
+      const response = await request(app)
+        .put('/api/auth/change-password')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(passwordData)
+        .expect(400);
+
+      expect(response.body).to.have.property('error', 'Validation failed');
+      expect(response.body.details).to.be.an('array');
+    });
+
+    it('should return 401 for missing authentication token', async () => {
+      const passwordData = {
+        currentPassword: 'OldPassword123',
+        newPassword: 'NewPassword123',
+        confirmPassword: 'NewPassword123'
+      };
+
+      const response = await request(app)
+        .put('/api/auth/change-password')
+        .send(passwordData)
+        .expect(401);
+
+      expect(response.body).to.have.property('error', 'Access token required');
+    });
+
+    it('should return 403 for invalid authentication token', async () => {
+      const passwordData = {
+        currentPassword: 'OldPassword123',
+        newPassword: 'NewPassword123',
+        confirmPassword: 'NewPassword123'
+      };
+
+      const response = await request(app)
+        .put('/api/auth/change-password')
+        .set('Authorization', 'Bearer invalid_token')
+        .send(passwordData)
+        .expect(403);
+
+      expect(response.body).to.have.property('error', 'Invalid token');
+    });
+  });
+
   describe('Health Check', () => {
     it('should return health status', async () => {
       const response = await request(app)
